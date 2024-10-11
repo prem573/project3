@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html lang="en" class="light-style layout-wide " dir="ltr" data-theme="theme-dark"
+    data-assets-path="https://aikyam.rguktsklm.ac.in/assetfiles/" data-template="vertical-menu-template"
+    data-style="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>Snake Game</title>
+    <meta name="description" content="Snake Game project for intern in scale orange company" />
+    <meta name="keywords" content="Snake Game project for intern in scale orange company">
+    <link rel="icon" type="image/x-icon" href="https://scaleorange.com/Logo-White.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&ampdisplay=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://aikyam.rguktsklm.ac.in/assetfiles/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="https://aikyam.rguktsklm.ac.in/assetfiles/css/demo.css" />
+    <link rel="stylesheet" href="https://aikyam.rguktsklm.ac.in/assetfiles/vendor/libs/node-waves/node-waves.css" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://aikyam.rguktsklm.ac.in/assetfiles/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="https://aikyam.rguktsklm.ac.in/assetfiles/vendor/libs/typeahead-js/typeahead.css" />
+    <script src="https://aikyam.rguktsklm.ac.in/assetfiles/vendor/js/helpers.js"></script>
+    <script src="https://aikyam.rguktsklm.ac.in/assetfiles/vendor/js/template-customizer.js"></script>
+    <script src="https://aikyam.rguktsklm.ac.in/assetfiles/js/config.js"></script>
+    <style>
+   
+        .grid {
+            width: 400px;
+            height: 400px;
+            display: grid;
+            grid-template-columns: repeat(20, 20px);
+            grid-template-rows: repeat(20, 20px);
+            background-color: #1f1f2e;
+            background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .square {
+            width: 100%;
+            height: 100%;
+        }
+
+        .snake {
+            background-color: red;
+        }
+
+        .food {
+            background-color: white;
+        }
+
+        #score {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 9999;
+            font-family: 'Arial', sans-serif;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="d-flex justify-content-center align-items-center vh-100">
+        <div id="score">Score: 0</div>
+        <div class="grid" id="grid">
+            <div class="grid" id="hweyggh"></div>
+            <h1 id="ladduscore"></h1>
+        </div>
+
+    </div>
+    <script src="https://aikyam.rguktsklm.ac.in/assetfiles/vendor/libs/jquery/jquery.js"></script>
+    <script src="https://aikyam.rguktsklm.ac.in/assetfiles/vendor/libs/popper/popper.js"></script>
+    <script src="https://aikyam.rguktsklm.ac.in/assetfiles/vendor/js/bootstrap.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.0/dist/sweetalert2.min.js"></script>
+
+    <script src="https://aikyam.rguktsklm.ac.in/assetfiles/vendor/libs/hammer/hammer.js"></script>
+    <script src="https://aikyam.rguktsklm.ac.in/assetfiles/vendor/libs/i18n/i18n.js"></script>
+    <script src="https://aikyam.rguktsklm.ac.in/assetfiles/vendor/libs/typeahead-js/typeahead.js"></script>
+
+
+
+
+
+</body>
+
+</html>
+<script>
+let paatascore = document.cookie.split(';').map(cookie => cookie.trim()).find(cookie => cookie.startsWith('snake=')) ? document.cookie.split(';').map(cookie => cookie.trim()).find(cookie => cookie.startsWith('snake=')).split('=')[1] : null;
+document.getElementById('ladduscore').textContent = `Score: ${paatascore !== null ? paatascore : '0'}`;
+
+const gridSize = 20;
+let laddu = 0;
+let snake = [{ x: Math.floor(gridSize / 2), y: Math.floor(gridSize / 2) }];
+let foodPosition = { x: Math.floor(Math.random() * gridSize), y: Math.floor(Math.random() * gridSize) };
+const grid = document.getElementById('grid');
+let isEatingFood = false;
+let directions = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+let direction = directions[Math.floor(Math.random() * directions.length)];
+let gameInterval = null;
+let vegam = 200; 
+let gameOver = false; 
+let saveme = new Date();
+saveme.setMonth(saveme.getMonth() + 1);
+function updateScore() {
+    laddu++;
+    document.getElementById('score').textContent = `Score: ${laddu}`;
+}
+
+function boom(text) {
+    if (gameOver) return; 
+    gameOver = true; 
+    score = -1;
+    if(paatascore==null){
+        document.cookie = `snake=${laddu}; expires=${saveme.toUTCString()}; path=/`;
+    }else{
+        if(paatascore<laddu){
+            document.cookie = `snake=${laddu}; expires=${saveme.toUTCString()}; path=/`; 
+        }
+    }
+    Swal.fire({
+        title: "Game Over",
+        text: text,
+        icon: 'info',
+        confirmButtonText: 'Okay'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.reload(); 
+        }
+    });
+    clearInterval(gameInterval); 
+}
+
+function createGridSquares() {
+    grid.innerHTML = '';
+    for (let i = 0; i < gridSize * gridSize; i++) {
+        const square = document.createElement('div');
+        square.classList.add('square');
+        grid.appendChild(square);
+    }
+}
+
+function placeFood() {
+    const currentFoodIndex = foodPosition.y * gridSize + foodPosition.x;
+    if (grid.children[currentFoodIndex]) {
+        grid.children[currentFoodIndex].classList.remove('food');
+    }
+    foodPosition.x = Math.floor(Math.random() * gridSize);
+    foodPosition.y = Math.floor(Math.random() * gridSize);
+    const newFoodIndex = foodPosition.y * gridSize + foodPosition.x;
+    grid.children[newFoodIndex].classList.add('food');
+}
+
+function drawSnake() {
+    grid.querySelectorAll('.square.snake').forEach(s => s.classList.remove('snake'));
+    snake.forEach(segment => {
+        const snakeIndex = segment.y * gridSize + segment.x;
+        if (grid.children[snakeIndex]) {
+            grid.children[snakeIndex].classList.add('snake');
+        }
+    });
+}
+
+function moveSnake(direction) {
+    const head = { ...snake[0] };
+
+    switch (direction) {
+        case 'ArrowUp':
+            head.y--;
+            break;
+        case 'ArrowDown':
+            head.y++;
+            break;
+        case 'ArrowLeft':
+            head.x--;
+            break;
+        case 'ArrowRight':
+            head.x++;
+            break;
+    }
+
+    if (head.x < 0 || head.x >= gridSize || head.y < 0 || head.y >= gridSize || isSnakeCollidingWithItself(head)) {
+        boom("Boom");
+        return;
+    }
+
+    snake.unshift(head);
+
+    if (head.x === foodPosition.x && head.y === foodPosition.y) {
+        updateScore()
+        isEatingFood = true;
+        placeFood();
+        increasevegam(); 
+    } else {
+        isEatingFood = false;
+        snake.pop(); 
+    }
+
+    drawSnake();
+}
+
+function isSnakeCollidingWithItself(head) {
+    return snake.some((segment, index) => index !== 0 && segment.x === head.x && segment.y === head.y);
+}
+
+function increasevegam() {
+    if (vegam > 100) {
+        vegam -= 20; 
+        clearInterval(gameInterval); 
+        gameInterval = setInterval(() => {
+            moveSnake(direction);
+        }, vegam); 
+    }
+}
+
+function startcheddambro() {
+    createGridSquares();
+    placeFood();
+    drawSnake();
+    vegam = 200;
+    gameInterval = setInterval(() => {
+        moveSnake(direction);
+    }, vegam);
+}
+
+document.addEventListener('keydown', function (event) {
+    if (gameOver) return; 
+    switch (event.key) {
+        case 'ArrowUp':
+            if (direction !== 'ArrowDown') direction = 'ArrowUp';
+            break;
+        case 'ArrowDown':
+            if (direction !== 'ArrowUp') direction = 'ArrowDown';
+            break;
+        case 'ArrowLeft':
+            if (direction !== 'ArrowRight') direction = 'ArrowLeft';
+            break;
+        case 'ArrowRight':
+            if (direction !== 'ArrowLeft') direction = 'ArrowRight';
+            break;
+    }
+});
+
+startcheddambro(); // Start the game
+</script>
+
+
+
+
+
